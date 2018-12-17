@@ -9,48 +9,54 @@
 import UIKit
 class ToDoViewController: UITableViewController {
     
+    // Outlets for objects
     @IBOutlet weak var titleItem: UITextField!
     @IBOutlet weak var completedButton: UIButton!
     @IBOutlet weak var dueDateLabel: UILabel!
     @IBOutlet weak var datePicker: UIDatePicker!
     @IBOutlet weak var notesView: UITextView!
-
+    
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
- 
+    
     override func viewDidLoad() {
-    super.viewDidLoad()
+        super.viewDidLoad()
         if let todo = todo {
+            // set navigation details
             navigationItem.title = "To-Do"
             titleItem.text = todo.title
+            // Checked or not
             completedButton.isSelected = todo.completed
+            // set according to date and details
             datePicker.date = todo.dueDate
             notesView.text = todo.notes
         } else {
+            // begin date at day from current date
             datePicker.date = Date().addingTimeInterval(24*60*60)
         }
-            updateSaveButtonState()
-            updateDueDateLabel(date: datePicker.date)
-            
-        }
+        updateSaveButtonState()
+        updateDueDateLabel(date: datePicker.date)
+        
+    }
     
     var isPickerHidden = true
-
+    
+    // changing label with data corresponding to picker
     func updateDueDateLabel(date: Date) {
-    dueDateLabel.text = ToDo.dueDateFormatter.string(from: date)
+        dueDateLabel.text = ToDo.dueDateFormatter.string(from: date)
     }
     
     var todo: ToDo?
     
-    
-    
+    // save button disabled until text is changed
     func updateSaveButtonState() {
-    let text = titleItem.text ?? ""
-    saveButtonItem.isEnabled = !text.isEmpty
+        let text = titleItem.text ?? ""
+        saveButtonItem.isEnabled = !text.isEmpty
     }
-    
+    // save button enabled when text changed
     @IBAction func textEditingChange(_ sender: Any) {
         updateSaveButtonState()
     }
+    // back to list
     @IBAction func returnTapped(_ sender: Any) {
         titleItem.resignFirstResponder()
     }
@@ -58,26 +64,29 @@ class ToDoViewController: UITableViewController {
     @IBAction func completeButtonTapped(_ sender: Any) {
         completedButton.isSelected = !completedButton.isSelected
     }
- 
-    @IBAction func datePickerEdited(_ sender: UIDatePicker) {
-    updateDueDateLabel(date: datePicker.date)}
     
+    // outlet due date picker combinated with changing label
+    @IBAction func datePickerEdited(_ sender: UIDatePicker) {
+        updateDueDateLabel(date: datePicker.date)}
+    
+    // set height for different cell types
     override func tableView(_ tableView: UITableView, heightForRowAt
-    indexPath: IndexPath) -> CGFloat {
+        indexPath: IndexPath) -> CGFloat {
         let normalCellHeight = CGFloat(44)
         let largeCellHeight = CGFloat(200)
         
         switch(indexPath) {
         case [1,1]: //Due Date Cell
-        return isPickerHidden ? normalCellHeight :
-        largeCellHeight
-        
+            return isPickerHidden ? normalCellHeight :
+            largeCellHeight
+            
         case [2,0]: //Notes Cell
-        return largeCellHeight
-        
+            return largeCellHeight
+            
         default: return normalCellHeight
+        }
     }
-    }
+    // fit table when date picker is not selected
     override func tableView(_ tableView: UITableView, didSelectRowAt
         indexPath: IndexPath) {
         switch (indexPath) {
@@ -95,11 +104,12 @@ class ToDoViewController: UITableViewController {
         }
     }
     
+    // prepare for segue setting correct title and details according to filled in data
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-    
+        
         guard segue.identifier == "saveUnwind" else { return }
-    
+        
         let title = titleItem.text!
         let isComplete = completedButton.isSelected
         let dueDate = datePicker.date

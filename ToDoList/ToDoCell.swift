@@ -8,14 +8,18 @@
 
 import UIKit
 
+// when checked, done
 @objc protocol ToDoCellDelegate: class {
     func checkmarkTapped(sender: ToDoCell)
 }
+
 class ToDoCell: UITableViewCell {
     var delegate: ToDoCellDelegate?
+    // button and title outlets
     @IBOutlet weak var completedButton: UIButton!
     @IBOutlet weak var titleLabel: UILabel!
     
+    // checked button function, changing img
     @IBAction func completedButtonTapped(_ sender: Any) {
         delegate?.checkmarkTapped(sender: self)
         
